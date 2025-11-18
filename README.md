@@ -1,1 +1,1 @@
-# Clash_Royal_Emote_Detector
+# Clash_Royale_Emote_Detector
