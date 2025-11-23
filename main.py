@@ -28,7 +28,11 @@ def load_reference_images():
         "Laughing": "laughing.png",
         "Yawning": "yawning.png", 
         "Crying": "crying.png",
-        "Taunting": "taunting.png"
+        "Taunting": "taunting.png",
+        "Pancakes": "pancakes.png",
+        "Dab": "dab.png",
+        "Scream": "scream.png",
+        "Wait": "wait.png"
     }
     
     for pose_name, filename in pose_images.items():
@@ -56,7 +60,11 @@ def play_pose_sound(pose_name):
             "Laughing": "laughing.mp3",
             "Yawning": "yawning.mp3",
             "Crying": "crying.mp3",
-            "Taunting": "taunting.mp3"
+            "Taunting": "taunting.mp3",
+            "Pancakes": "pancake.mp3",
+            "Dab": "dab.mp3",
+            "Scream": "scream.mp3",
+            "Wait": "wait.mp3"
         }
         
         if pose_name in sound_files:
@@ -117,6 +125,7 @@ def main():
     # Show initial blank reference image (will be resized by window)
     blank_img = np.zeros((100, 300, 3), dtype=np.uint8)
     cv2.imshow(reference_window_name, blank_img)
+
     
     # Variables for sound timing
     last_sound_time = 0
@@ -163,6 +172,8 @@ def main():
             current_time - last_sound_time >= sound_cooldown):
             play_pose_sound(pose_prediction)
             last_sound_time = current_time
+
+
         
         # Add info text
         cv2.putText(frame, "MediaPipe Holistic Detection", (10, 30), 

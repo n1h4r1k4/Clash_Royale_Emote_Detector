@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import os
-import json
+import niha
 import pickle
 from datetime import datetime
 from holistic_detector import HolisticDetector
@@ -32,7 +32,11 @@ class PoseDataCollector:
             0: "Laughing",
             1: "Yawning", 
             2: "Crying",
-            3: "Taunting"
+            3: "Taunting",
+            4: "Pancakes",
+            5: "Dab",
+            6: "Scream",
+            7: "Wait"
         }
         
         print("Pose Data Collector - Auto Collection Mode")
@@ -41,6 +45,10 @@ class PoseDataCollector:
         print("  '1' - Set pose to Yawning") 
         print("  '2' - Set pose to Crying")
         print("  '3' - Set pose to Taunting")
+        print("  '4' - Set pose to Pancakes")
+        print("  '5' - Set pose to Dab")
+        print("  '6' - Set pose to Scream")
+        print("  '7' - Set pose to Wait")
         print("  'a' - Toggle auto collection (start/stop)")
         print("  's' - Save collected data to files")
         print("  't' - Train model with collected data")
@@ -119,7 +127,7 @@ class PoseDataCollector:
                        (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
             cv2.putText(frame, f"Auto Collection: {auto_status}", 
                        (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
-            cv2.putText(frame, "Press 0-3 to change pose, 'a' to toggle auto-collect", 
+            cv2.putText(frame, f"Press 0-{len(self.pose_labels)-1} to change pose, 'a' to toggle auto-collect", 
                        (10, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
             cv2.putText(frame, "'s' to save, 'l' to load, 't' to train", 
                        (10, 150), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
@@ -138,10 +146,11 @@ class PoseDataCollector:
             
             if key == ord('q'):
                 break
-            elif key >= ord('0') and key <= ord('3'):
-                self.current_pose = key - ord('0')
+            elif key in [ord(str(k)) for k in self.pose_labels.keys()]:
+                self.current_pose = int(chr(key))
                 self.collected_samples = 0
                 print(f"Switched to collecting: {self.pose_labels[self.current_pose]}")
+
             elif key == ord('a'):
                 self.auto_collect = not self.auto_collect
                 status = "started" if self.auto_collect else "stopped"
@@ -203,20 +212,20 @@ class PoseDataCollector:
             "collection_date": datetime.now().isoformat()
         }
         
-        metadata_file = os.path.join(self.data_dir, f"pose_metadata_{timestamp}.json")
+        metadata_file = os.path.join(self.data_dir, f"pose_metadata_{timestamp}.niha")
         with open(metadata_file, 'w') as f:
-            json.dump(metadata, f, indent=2)
+            niha.dump(metadata, f, indent=2)
         
         print(f"Data saved to {self.data_dir}/")
         print(f"  Features: pose_features_{timestamp}.npy ({len(X)} samples)")
         print(f"  Labels: pose_labels_{timestamp}.npy")
-        print(f"  Metadata: pose_metadata_{timestamp}.json")
+        print(f"  Metadata: pose_metadata_{timestamp}.niha")
         
         # Also save to a default file for easy loading
         np.save(os.path.join(self.data_dir, "pose_features_latest.npy"), np.array(X))
         np.save(os.path.join(self.data_dir, "pose_labels_latest.npy"), np.array(y))
-        with open(os.path.join(self.data_dir, "pose_metadata_latest.json"), 'w') as f:
-            json.dump(metadata, f, indent=2)
+        with open(os.path.join(self.data_dir, "pose_metadata_latest.niha"), 'w') as f:
+            niha.dump(metadata, f, indent=2)
         
         print("Also saved as 'latest' files for easy loading!")
     

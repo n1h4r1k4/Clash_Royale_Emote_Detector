@@ -19,7 +19,10 @@ class PoseClassifier:
             1: "Yawning", 
             2: "Crying",
             3: "Taunting",
-            4: "Unknown"
+            4: "Pancakes",
+            5: "Dab",
+            6: "Scream",
+            7: "Wait"
         }
         self.model_path = model_path or "pose_classifier_model.pkl"
         
